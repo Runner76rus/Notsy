@@ -2,12 +2,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>JSP - Hello World</title>
+    <title>notsy</title>
 </head>
 <body>
-<h1><%= "Hello World!" %>
+<h1><%= "NOTSY" %>
 </h1>
+<h3>Система уведомлений</h3>
 <br/>
-<a href="hello-servlet">Hello Servlet</a>
+<a href="/message.jsp">Создать уведомление</a>
+<a href="registration.jsp">Зарегистрироваться</a>
+<a href="login.jsp">Войти</a>
 </body>
 </html>
