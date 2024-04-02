@@ -9,7 +9,7 @@
 </h1>
 <h3>Система уведомлений</h3>
 <br/>
-<a href="/message.jsp">Создать уведомление</a>
+<a href="${pageContext.request.contextPath}/message.jsp">Создать уведомление</a>
 <a href="registration.jsp">Зарегистрироваться</a>
 <a href="login.jsp">Войти</a>
 </body>
