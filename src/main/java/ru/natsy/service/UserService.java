@@ -9,20 +9,6 @@ import java.sql.Statement;
 
 public class UserService {
 
-    public static void main(String[] args) {
-        try (Connection connection = ConnectionManager.open()) {
-            String query = """
-                    INSERT INTO usr (username, password ,first_name, second_name, email, phone_number)
-                    VALUES ('admin','12345','Антон','Yazgevich','yazgevich@mail.ru','+79806569561');
-                    """;
-            System.out.println(query);
-            Statement statement = connection.createStatement();
-            statement.execute(query);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public User getUser(long id) {
         return null;
     }
@@ -39,7 +25,6 @@ public class UserService {
                     user.getSecondName(),
                     user.getEmail(),
                     user.getPhoneNumber());
-            System.out.println(query);
             Statement statement = connection.createStatement();
             statement.execute(query);
         } catch (SQLException e) {

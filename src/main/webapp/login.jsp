@@ -14,11 +14,15 @@
 <h1>Вход в учётную запись</h1>
 <div>
     <form>
-        <label for="username">Отображаемое имя</label>
-        <input type="text" id="username" name="username" placeholder="Ваш никнейм">
-        <label for="password">Телефон</label>
-        <input type="password" id="password" name="password">
-        <input type="submit" placeholder="Зарегистрироваться">
+        <div>
+            <label for="username">Никнейм</label>
+            <input type="text" id="username" name="username" placeholder="Ваш никнейм">
+        </div>
+        <div>
+            <label for="password">Пароль</label>
+            <input type="password" id="password" name="password">
+        </div>
+        <input type="submit" placeholder="Войти">
     </form>
 </div>
 </body>
