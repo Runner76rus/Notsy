@@ -4,8 +4,8 @@ import ru.natsy.model.User;
 import ru.natsy.util.ConnectionManager;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 public class UserService {
 
@@ -17,16 +17,16 @@ public class UserService {
         try (Connection connection = ConnectionManager.open()) {
             String query = """
                     INSERT INTO usr (username, password ,first_name, second_name, email, phone_number)
-                    VALUES ('%s','%s','%s','%s','%s','%s');
-                    """.formatted(
-                    user.getUsername(),
-                    user.getPassword(),
-                    user.getFirstName(),
-                    user.getSecondName(),
-                    user.getEmail(),
-                    user.getPhoneNumber());
-            Statement statement = connection.createStatement();
-            statement.execute(query);
+                    VALUES (?,?,?,?,?,?);
+                    """;
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, user.getUsername());
+            statement.setString(2, user.getPassword());
+            statement.setString(3, user.getFirstName());
+            statement.setString(4, user.getSecondName());
+            statement.setString(5, user.getEmail());
+            statement.setString(6, user.getPhoneNumber());
+            statement.execute();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

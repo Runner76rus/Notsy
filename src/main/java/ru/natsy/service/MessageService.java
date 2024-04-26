@@ -4,9 +4,9 @@ import ru.natsy.model.Message;
 import ru.natsy.util.ConnectionManager;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,13 +17,12 @@ public class MessageService {
         try (Connection connection = ConnectionManager.open()) {
             String query = """
                     INSERT INTO message (text, id_user)
-                    VALUES ('%s','%d');
-                    """.formatted(
-                    message.getText(),
-                    message.getUserId()
-            );
-            Statement statement = connection.createStatement();
-            statement.execute(query);
+                    VALUES (?,?);
+                    """;
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, message.getText());
+            statement.setLong(2, message.getUserId());
+            statement.execute();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -33,12 +32,13 @@ public class MessageService {
         try (Connection connection = ConnectionManager.open()) {
             String query = """
                     SELECT * FROM message
-                    WHERE id = %d;
-                    """.formatted(id);
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(query);
+                    WHERE id = ?;
+                    """;
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setLong(1, id);
+            ResultSet resultSet = statement.executeQuery();
 
-            if (resultSet.next()){
+            if (resultSet.next()) {
                 String text = resultSet.getString("text");
                 return new Message(id, text);
             }
@@ -52,10 +52,11 @@ public class MessageService {
         try (Connection connection = ConnectionManager.open()) {
             String query = """
                     SELECT * FROM message
-                    WHERE id_user = %d;
-                    """.formatted(userId);
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(query);
+                    WHERE id_user = ?;
+                    """;
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setLong(1, userId);
+            ResultSet resultSet = statement.executeQuery();
             List<Message> messages = new ArrayList<>();
 
             while (resultSet.next()) {
