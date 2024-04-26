@@ -14,7 +14,7 @@ public class UserService {
     }
 
     public void addUser(User user) {
-        try (Connection connection = ConnectionManager.open()) {
+        try (Connection connection = ConnectionManager.get()) {
             String query = """
                     INSERT INTO usr (username, password ,first_name, second_name, email, phone_number)
                     VALUES (?,?,?,?,?,?);

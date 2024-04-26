@@ -14,7 +14,7 @@ public class MessageService {
 
 
     public void addMassage(Message message) {
-        try (Connection connection = ConnectionManager.open()) {
+        try (Connection connection = ConnectionManager.get()) {
             String query = """
                     INSERT INTO message (text, id_user)
                     VALUES (?,?);
@@ -29,7 +29,7 @@ public class MessageService {
     }
 
     public Message getMessage(long id) {
-        try (Connection connection = ConnectionManager.open()) {
+        try (Connection connection = ConnectionManager.get()) {
             String query = """
                     SELECT * FROM message
                     WHERE id = ?;
@@ -49,7 +49,7 @@ public class MessageService {
     }
 
     public List<Message> getAll(long userId) {
-        try (Connection connection = ConnectionManager.open()) {
+        try (Connection connection = ConnectionManager.get()) {
             String query = """
                     SELECT * FROM message
                     WHERE id_user = ?;
