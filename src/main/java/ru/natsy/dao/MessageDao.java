@@ -4,10 +4,7 @@ import ru.natsy.exception.DaoException;
 import ru.natsy.model.Message;
 import ru.natsy.util.ConnectionManager;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,24 +19,26 @@ public class MessageDao {
 
     private static final MessageDao INSTANCE = new MessageDao();
 
-    private MessageDao(){}
+    private MessageDao() {
+    }
 
     public static MessageDao getInstance() {
         return INSTANCE;
     }
 
-    public boolean update(Message message){
-        try(Connection connection = ConnectionManager.get()){
+    public boolean update(Message message) {
+        try (Connection connection = ConnectionManager.get()) {
             PreparedStatement statement = connection.prepareStatement(UPDATE_SQL);
             statement.setString(1, message.getText());
+            statement.setLong(2, message.getId());
             return statement.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new DaoException(e);
         }
     }
 
-    public boolean delete(long id){
-        try(Connection connection = ConnectionManager.get()){
+    public boolean delete(long id) {
+        try (Connection connection = ConnectionManager.get()) {
             PreparedStatement statement = connection.prepareStatement(DELETE_SQL);
             statement.setLong(1, id);
 
@@ -51,11 +50,15 @@ public class MessageDao {
 
     public void save(Message message) {
         try (Connection connection = ConnectionManager.get()) {
-            PreparedStatement statement = connection.prepareStatement(SAVE_SQL);
+            PreparedStatement statement = connection.prepareStatement(SAVE_SQL, Statement.RETURN_GENERATED_KEYS);
             statement.setString(1, message.getText());
             statement.setLong(2, message.getUserId());
 
             statement.execute();
+            ResultSet keys = statement.getGeneratedKeys();
+            if (keys.next()) {
+                message.setId(keys.getLong(1));
+            }
         } catch (SQLException e) {
             throw new DaoException(e);
         }
@@ -69,7 +72,8 @@ public class MessageDao {
 
             if (resultSet.next()) {
                 String text = resultSet.getString("text");
-                return new Message(id, text);
+                long userId = resultSet.getLong("id_user");
+                return new Message(id, text, userId);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -87,8 +91,8 @@ public class MessageDao {
             while (resultSet.next()) {
                 int id = resultSet.getInt("id");
                 String text = resultSet.getString("text");
-
-                messages.add(new Message(id, text));
+                long uId = resultSet.getLong("id_user");
+                messages.add(new Message(id, text, uId));
             }
 
             return messages;

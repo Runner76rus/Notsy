@@ -12,17 +12,18 @@ public final class PropertiesUtil {
         loadProperties();
     }
 
-    private PropertiesUtil(){}
+    private PropertiesUtil() {
+    }
 
     private static void loadProperties() {
-        try (InputStream resourceStream = PropertiesUtil.class.getResourceAsStream("/application.properties")){
+        try (InputStream resourceStream = PropertiesUtil.class.getResourceAsStream("/application.properties")) {
             PROPERTIES.load(resourceStream);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static String get(String key){
+    public static String get(String key) {
         return PROPERTIES.getProperty(key);
     }
 }

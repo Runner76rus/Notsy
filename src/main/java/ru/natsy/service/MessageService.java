@@ -18,10 +18,10 @@ public class MessageService {
     }
 
     public List<Message> getAll(long userId) {
-    return messageDao.findAll(userId);
+        return messageDao.findAll(userId);
     }
 
-    public boolean delete(long id) {
+    public boolean remove(long id) {
         return messageDao.delete(id);
     }
 

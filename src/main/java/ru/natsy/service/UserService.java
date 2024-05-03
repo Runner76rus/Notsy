@@ -2,11 +2,7 @@ package ru.natsy.service;
 
 import ru.natsy.dao.UserDao;
 import ru.natsy.model.User;
-import ru.natsy.util.ConnectionManager;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.List;
 
 public class UserService {

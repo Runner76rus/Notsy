@@ -36,9 +36,9 @@ public class UserDao {
         return instance;
     }
 
-    public  List<User> findAll() throws DaoException {
+    public List<User> findAll() throws DaoException {
         List<User> users = new ArrayList<>();
-        try(Connection connection = ConnectionManager.get()){
+        try (Connection connection = ConnectionManager.get()) {
             PreparedStatement statement = connection.prepareStatement(GET_ALL_SQL);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
@@ -58,12 +58,12 @@ public class UserDao {
         }
     }
 
-    public User findById(long id){
-        try(Connection connection = ConnectionManager.get()){
+    public User findById(long id) {
+        try (Connection connection = ConnectionManager.get()) {
             PreparedStatement statement = connection.prepareStatement(GET_SQL);
             statement.setLong(1, id);
             ResultSet resultSet = statement.executeQuery();
-            if(resultSet.next()){
+            if (resultSet.next()) {
                 User user = new User();
                 user.setId(resultSet.getLong("id"));
                 user.setUsername(resultSet.getString("username"));
@@ -81,7 +81,7 @@ public class UserDao {
     }
 
     public boolean update(User user) {
-        try(Connection connection = ConnectionManager.get()){
+        try (Connection connection = ConnectionManager.get()) {
             PreparedStatement statement = connection.prepareStatement(UPDATE_SQL);
             statement.setString(1, user.getUsername());
             statement.setString(2, user.getPassword());
@@ -97,7 +97,7 @@ public class UserDao {
     }
 
     public boolean delete(long id) {
-        try(Connection connection = ConnectionManager.get()){
+        try (Connection connection = ConnectionManager.get()) {
             PreparedStatement statement = connection.prepareStatement(DELETE_SQL);
             statement.setLong(1, id);
             return statement.executeUpdate() > 0;

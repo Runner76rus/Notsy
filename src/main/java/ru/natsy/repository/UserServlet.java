@@ -10,7 +10,7 @@ import ru.natsy.service.UserService;
 
 import java.io.IOException;
 
-@WebServlet(name = "userServlet",value = "/user")
+@WebServlet(name = "userServlet", value = "/user")
 public class UserServlet extends HttpServlet {
 
     private final UserService userService;

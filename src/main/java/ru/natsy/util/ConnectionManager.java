@@ -41,7 +41,7 @@ public final class ConnectionManager {
     private ConnectionManager() {
     }
 
-    public static Connection get(){
+    public static Connection get() {
         try {
             return pool.take();
         } catch (InterruptedException e) {
