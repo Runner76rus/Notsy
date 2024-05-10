@@ -9,14 +9,14 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MessageDao {
+public class MessageDao implements Dao<Long, Message> {
 
 
     private static final String SAVE_SQL = "INSERT INTO message (text, id_user) VALUES (?, ?)";
     private static final String DELETE_SQL = "DELETE FROM message WHERE id = ?";
     private static final String UPDATE_SQL = "UPDATE message SET text = ? WHERE id = ?";
     private static final String GET_SQL = "SELECT * FROM message WHERE id = ?";
-    private static final String GET_ALL_SQL = "SELECT * FROM message WHERE id_user = ?";
+    private static final String GET_ALL_SQL = "SELECT * FROM message";
 
     private static final MessageDao INSTANCE = new MessageDao();
 
@@ -38,7 +38,7 @@ public class MessageDao {
         }
     }
 
-    public boolean delete(long id) {
+    public boolean delete(Long id) {
         try (Connection connection = ConnectionManager.get()) {
             PreparedStatement statement = connection.prepareStatement(DELETE_SQL);
             statement.setLong(1, id);
@@ -65,7 +65,8 @@ public class MessageDao {
         }
     }
 
-    public Message findById(long id) {
+    @Override
+    public Message findById(Long id) {
         try (Connection connection = ConnectionManager.get()) {
             PreparedStatement statement = connection.prepareStatement(GET_SQL);
             statement.setLong(1, id);
@@ -82,9 +83,19 @@ public class MessageDao {
         return null;
     }
 
-    public List<Message> findAll(long userId) {
+    @Override
+    public List<Message> findAll() {
         try (Connection connection = ConnectionManager.get()) {
             PreparedStatement statement = connection.prepareStatement(GET_ALL_SQL);
+            return getMessages(statement);
+        } catch (SQLException e) {
+            throw new DaoException(e);
+        }
+    }
+
+    public List<Message> findAll(long userId) {
+        try (Connection connection = ConnectionManager.get()) {
+            PreparedStatement statement = connection.prepareStatement(GET_ALL_SQL + " WHERE id_user = ?");
             statement.setLong(1, userId);
             return getMessages(statement);
         } catch (SQLException e) {
@@ -96,7 +107,7 @@ public class MessageDao {
         if (filter != null) {
             String sql = " LIMIT ? OFFSET ?";
             try (Connection connection = ConnectionManager.get()) {
-                PreparedStatement statement = connection.prepareStatement(GET_ALL_SQL + sql);
+                PreparedStatement statement = connection.prepareStatement(GET_ALL_SQL + " WHERE id_user = ?" + sql);
                 statement.setLong(1, userId);
                 statement.setInt(2, filter.limit());
                 statement.setInt(3, filter.offset());

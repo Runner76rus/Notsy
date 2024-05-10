@@ -11,7 +11,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserDao {
+public class UserDao implements Dao<Long, User> {
 
     private static final UserDao instance = new UserDao();
 
@@ -36,21 +36,14 @@ public class UserDao {
         return instance;
     }
 
+    @Override
     public List<User> findAll() throws DaoException {
         List<User> users = new ArrayList<>();
         try (Connection connection = ConnectionManager.get()) {
             PreparedStatement statement = connection.prepareStatement(GET_ALL_SQL);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
-                User user = new User();
-                user.setId(resultSet.getLong("id"));
-                user.setUsername(resultSet.getString("username"));
-                user.setPassword(resultSet.getString("password"));
-                user.setFirstName(resultSet.getString("first_name"));
-                user.setSecondName(resultSet.getString("second_name"));
-                user.setEmail(resultSet.getString("email"));
-                user.setPhoneNumber(resultSet.getString("phone_number"));
-                users.add(user);
+                users.add(getUser(resultSet));
             }
             return users;
         } catch (SQLException e) {
@@ -58,21 +51,14 @@ public class UserDao {
         }
     }
 
-    public User findById(long id) {
+    @Override
+    public User findById(Long id) {
         try (Connection connection = ConnectionManager.get()) {
             PreparedStatement statement = connection.prepareStatement(GET_SQL);
             statement.setLong(1, id);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
-                User user = new User();
-                user.setId(resultSet.getLong("id"));
-                user.setUsername(resultSet.getString("username"));
-                user.setPassword(resultSet.getString("password"));
-                user.setFirstName(resultSet.getString("first_name"));
-                user.setSecondName(resultSet.getString("second_name"));
-                user.setEmail(resultSet.getString("email"));
-                user.setPhoneNumber(resultSet.getString("phone_number"));
-                return user;
+                return getUser(resultSet);
             }
         } catch (SQLException e) {
             throw new DaoException(e);
@@ -80,23 +66,18 @@ public class UserDao {
         return null;
     }
 
-    public boolean update(User user) {
-        try (Connection connection = ConnectionManager.get()) {
-            PreparedStatement statement = connection.prepareStatement(UPDATE_SQL);
-            statement.setString(1, user.getUsername());
-            statement.setString(2, user.getPassword());
-            statement.setString(3, user.getFirstName());
-            statement.setString(4, user.getSecondName());
-            statement.setString(5, user.getEmail());
-            statement.setString(6, user.getPhoneNumber());
-
-            return statement.executeUpdate() > 0;
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
+    @Override
+    public void save(User user) {
+        save(user, SAVE_SQL);
     }
 
-    public boolean delete(long id) {
+    @Override
+    public boolean update(User user) {
+        return save(user, UPDATE_SQL);
+    }
+
+    @Override
+    public boolean delete(Long id) {
         try (Connection connection = ConnectionManager.get()) {
             PreparedStatement statement = connection.prepareStatement(DELETE_SQL);
             statement.setLong(1, id);
@@ -106,19 +87,31 @@ public class UserDao {
         }
     }
 
-    public void save(User user) {
+    private boolean save(User user, String query) {
         try (Connection connection = ConnectionManager.get()) {
-            PreparedStatement statement = connection.prepareStatement(SAVE_SQL);
+            PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, user.getUsername());
             statement.setString(2, user.getPassword());
             statement.setString(3, user.getFirstName());
             statement.setString(4, user.getSecondName());
             statement.setString(5, user.getEmail());
             statement.setString(6, user.getPhoneNumber());
-
-            statement.execute();
+            return statement.executeUpdate() > 0;
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DaoException(e);
         }
+
+    }
+
+    private User getUser(ResultSet resultSet) throws SQLException {
+        User user = new User();
+        user.setId(resultSet.getLong("id"));
+        user.setUsername(resultSet.getString("username"));
+        user.setPassword(resultSet.getString("password"));
+        user.setFirstName(resultSet.getString("first_name"));
+        user.setSecondName(resultSet.getString("second_name"));
+        user.setEmail(resultSet.getString("email"));
+        user.setPhoneNumber(resultSet.getString("phone_number"));
+        return user;
     }
 }
